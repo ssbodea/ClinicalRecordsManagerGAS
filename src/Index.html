@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Layout</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      height: 100%;
+      overflow-y: scroll;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      gap: 24px;
+      padding: 24px;
+      padding-right: calc(24px - (100vw - 100%));
+      background-color: #f8fafc;
+      overflow-x: hidden;
+      font-size: 1.1rem;
+    }
+
+    body::-webkit-scrollbar {
+      width: 8px;
+      background-color: transparent;
+    }
+
+    body::-webkit-scrollbar-thumb {
+      background-color: transparent;
+    }
+
+    .notification {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      max-width: 80%;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .notification.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-10px);
+    }
+
+    .notification.success {
+      background-color: #10b981;
+      color: white;
+    }
+
+    .notification.error {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    .notification.warning {
+      background-color: #f59e0b;
+      color: white;
+    }
+
+    .notification.info {
+      background-color: #3b82f6;
+      color: white;
+    }
+
+    .toolbar {
+      background-color: #1e293b;
+      color: #f8fafc;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .toolbar-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .toolbar-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      background-color: #334155;
+      color: white;
+      width: 4cm;
+      height: 1.5cm;
+      min-width: 4cm;
+      min-height: 1.5cm;
+      font-size: 1rem;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    .toolbar-button:hover {
+      background-color: #475569;
+      transform: translateY(-1px);
+    }
+
+    .toolbar-button svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    #refreshBtn {
+      background-color: #3b82f6;
+    }
+
+    #refreshBtn:hover {
+      background-color: #2563eb;
+    }
+
+    #saveBtn {
+      background-color: #10b981;
+    }
+
+    #saveBtn:hover {
+      background-color: #059669;
+    }
+
+    #searchBtn {
+      background-color: #8b5cf6;
+    }
+
+    #searchBtn:hover {
+      background-color: #7c3aed;
+    }
+
+    #exportBtn {
+      background-color: #10b981;
+    }
+
+    #exportBtn:hover {
+      background-color: #059669;
+    }
+
+    #reportBtn {
+      background-color: #f59e0b;
+    }
+
+    #reportBtn:hover {
+      background-color: #d97706;
+    }
+
+    #exportStartDate,
+    #exportEndDate,
+    #reportStartDate,
+    #reportEndDate {
+      padding: 12px 14px;
+      width: 100%;
+      height: 46px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border 0.2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .modal .date-input-wrapper {
+      position: relative;
+    }
+
+    .modal .date-input-wrapper::after {
+      content: "📅";
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: #94a3b8;
+      font-size: 1.2rem;
+    }
+
+    #exportStartDate::-webkit-calendar-picker-indicator,
+    #exportEndDate::-webkit-calendar-picker-indicator,
+    #reportStartDate::-webkit-calendar-picker-indicator,
+    #reportEndDate::-webkit-calendar-picker-indicator {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      height: auto;
+      color: transparent;
+      background: transparent;
+    }
+
+    #deleteBtn {
+      background-color: #ef4444;
+    }
+
+    #deleteBtn:hover {
+      background-color: #dc2626;
+    }
+
+    #deletePassword {
+      padding: 12px 14px;
+      width: 100%;
+      height: 46px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border 0.2s ease;
+    }
+
+    #deletePassword:focus {
+      outline: none;
+      border-color: #94a3b8;
+    }
+
+    .pagination-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      background-color: #334155;
+      color: white;
+      height: 46px;
+      min-width: 46px;
+      font-size: 1rem;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    .pagination-button:hover {
+      background-color: #475569;
+      transform: translateY(-1px);
+    }
+
+    .pagination-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .pagination-button svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .pagination-info {
+      font-size: 1.1rem;
+      color: #1e293b;
+      padding: 0 12px;
+      white-space: nowrap;
+      font-weight: 600;
+      background-color: #f8fafc;
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+
+    #prevBtn {
+      background-color: #3b82f6;
+    }
+
+    #prevBtn:hover {
+      background-color: #2563eb;
+    }
+
+    #nextBtn {
+      background-color: #3b82f6;
+    }
+
+    #nextBtn:hover {
+      background-color: #2563eb;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 24px;
+      border-radius: 12px;
+      width: 450px;
+      max-width: 90%;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #1e293b;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .modal-button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .modal-confirm {
+      background-color: #10b981;
+      color: white;
+    }
+
+    .modal-cancel {
+      background-color: #e2e8f0;
+      color: #334155;
+    }
+
+    .toolbar-pagination {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section {
+      background-color: white;
+      border: 1px solid #e0e7ff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .section-title {
+      font-weight: 600;
+      margin-bottom: 20px;
+      font-size: 1.95rem;
+      color: #3b82f6;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .menstruation-date {
+      font-size: 1.1rem;
+      color: #64748b;
+      font-weight: 500;
+      background-color: #f1f5f9;
+      padding: 8px 16px;
+      border-radius: 8px;
+    }
+
+    .menstruation-date span {
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .section-1 {
+      display: flex;
+      gap: 24px;
+    }
+
+    .section-1 .column-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .column-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #334155;
+      padding-left: 8px;
+    }
+
+    .section-1 .column {
+      flex: 1;
+      background-color: #f1f5f9;
+      padding: 16px 0;
+      text-align: center;
+      border-radius: 8px;
+      color: #64748b;
+      font-size: 1.1rem;
+    }
+
+    .section-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .section-2 .item-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .item-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #334155;
+      padding-left: 8px;
+    }
+
+    .section-2 .item {
+      background-color: #f1f5f9;
+      padding: 16px;
+      text-align: left;
+      border-radius: 8px;
+      color: #64748b;
+      flex: 1;
+      font-size: 1.1rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .row-3-4 {
+      display: flex;
+      gap: 24px;
+    }
+
+    .row-3-4>div {
+      flex: 1;
+    }
+
+    .row-5-6 {
+      display: flex;
+      gap: 24px;
+    }
+
+    .row-5-6>div {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-row {
+      margin-bottom: 16px;
+    }
+
+    .input-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .input-field label {
+      font-size: 1.1rem;
+      color: #334155;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select {
+      padding: 12px 14px;
+      width: 100%;
+      height: 46px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border 0.2s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #94a3b8;
+    }
+
+    .date-input-wrapper {
+      position: relative;
+    }
+
+    .date-input-wrapper::after {
+      content: "📅";
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: #94a3b8;
+      font-size: 1.2rem;
+    }
+
+    input[type="date"] {
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      height: auto;
+      color: transparent;
+      background: transparent;
+    }
+
+    input[type="date"]::-webkit-inner-spin-button,
+    input[type="date"]::-webkit-clear-button {
+      display: none;
+      -webkit-appearance: none;
+    }
+
+    .checkbox-container {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 31px;
+      margin-bottom: 25px;
+      height: 66px;
+      align-items: flex-end;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      height: 46px;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      appearance: none;
+      -webkit-appearance: none;
+      border: 2px solid #cbd5e1;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      flex-shrink: 0;
+      margin: 0;
+    }
+
+    .checkbox-item input[type="checkbox"]:checked {
+      background-color: #1e293b;
+      border-color: #1e293b;
+    }
+
+    .checkbox-item input[type="checkbox"]:checked::after {
+      content: "✓";
+      position: absolute;
+      color: white;
+      font-size: 20px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .checkbox-item label {
+      color: #334155;
+      font-size: 1.1rem;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .section-5-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+      height: 100%;
+    }
+
+    .section-6-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+      height: 100%;
+    }
+
+    .tall-input {
+      resize: vertical;
+      min-height: 100px;
+      max-height: 150px;
+      padding: 12px;
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    .tall-input:focus {
+      outline: none;
+      border-color: #94a3b8;
+    }
+
+    .align-container {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      gap: 16px;
+    }
+
+    .section-7-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="toolbar section">
+    <div class="toolbar-buttons">
+      <button id="refreshBtn" class="toolbar-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                    <path d="M16 16h5v5"></path>
+                </svg>
+                Reîncarcă
+            </button>
+      <button id="saveBtn" class="toolbar-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Salvează
+            </button>
+      <button id="searchBtn" class="toolbar-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Caută
+            </button>
+    </div>
+    <div class="toolbar-pagination">
+      <button id="prevBtn" class="pagination-button" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+      <div class="pagination-info">Pagina <span id="currentPage">0</span> din <span id="totalPages">0</span></div>
+      <button id="nextBtn" class="pagination-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+    </div>
+    <div class="toolbar-buttons">
+      <button id="exportBtn" class="toolbar-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Exportă
+            </button>
+      <button id="reportBtn" class="toolbar-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Raportează
+            </button>
+      <button id="deleteBtn" class="toolbar-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+                Șterge
+            </button>
+    </div>
+  </div>
+
+  <div id="searchModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">Căutare Pacient</div>
+      <div class="input-field">
+        <label>Nume Prenume</label>
+        <input type="text" id="searchName" placeholder="Introduceți numele și prenumele">
+      </div>
+      <br>
+      <div class="input-field">
+        <label>Email</label>
+        <input type="text" id="searchEmail" placeholder="Introduceți email-ul">
+      </div>
+      <br>
+      <div class="input-field">
+        <label>Telefon</label>
+        <input type="text" id="searchPhone" placeholder="Introduceți numărul de telefon">
+      </div>
+      <div class="modal-actions">
+        <button class="modal-button modal-cancel" onclick="closeModal('searchModal')">Anulează</button>
+        <button class="modal-button modal-confirm" onclick="performSearch()">Confirmă</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="exportModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">Export Pacienți</div>
+      <div class="input-field">
+        <label>Data început</label>
+        <div class="date-input-wrapper">
+          <input type="datetime-local" id="exportStartDate">
+        </div>
+      </div>
+      <br>
+      <div class="input-field">
+        <label>Data sfârșit</label>
+        <div class="date-input-wrapper">
+          <input type="datetime-local" id="exportEndDate">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-button modal-cancel" onclick="closeModal('exportModal')">Anulează</button>
+        <button class="modal-button modal-confirm" onclick="performExport()">Confirmă</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="reportModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">Raport Pacienți</div>
+      <div class="input-field">
+        <label>Data început</label>
+        <div class="date-input-wrapper">
+          <input type="datetime-local" id="reportStartDate">
+        </div>
+      </div>
+      <br>
+      <div class="input-field">
+        <label>Data sfârșit</label>
+        <div class="date-input-wrapper">
+          <input type="datetime-local" id="reportEndDate">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-button modal-cancel" onclick="closeModal('reportModal')">Anulează</button>
+        <button class="modal-button modal-confirm" onclick="performReport()">Confirmă</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">Șterge Pacienți</div>
+      <p style="margin-bottom: 16px; color: #ef4444;">Atenție! Această acțiune este permanentă și nu poate fi
+        anulată.
+      </p>
+      <div class="input-field">
+        <label>Parola</label>
+        <input type="password" id="deletePassword" placeholder="Introduceți parola pentru confirmare">
+      </div>
+      <div class="modal-actions">
+        <button class="modal-button modal-cancel" onclick="closeModal('deleteModal')">Anulează</button>
+        <button class="modal-button modal-confirm" onclick="performDelete()">Confirmă</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Informații Pacient</div>
+    <div class="section-1">
+      <div class="column-container">
+        <div class="column-title">ID / Data, ora vizitei</div>
+        <div class="column" id="patient-visit-info"></div>
+      </div>
+      <div class="column-container">
+        <div class="column-title">Nume / Vârsta / Sexul</div>
+        <div class="column" id="patient-basic-info"></div>
+      </div>
+      <div class="column-container">
+        <div class="column-title">Email / Telefon</div>
+        <div class="column" id="patient-contact-info"></div>
+      </div>
+      <div class="column-container">
+        <div class="column-title">Facultate / An / Limbă</div>
+        <div class="column" id="patient-education-info"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Istoric Medical</div>
+      <div id="menstruation-display" class="menstruation-date" style="display: none;">
+        Prima zi a ultimei menstruații: <span id="patient-last-menstruation"></span>
+      </div>
+    </div>
+    <div class="section-2">
+      <div class="item-container">
+        <div class="item-title">Simptome / Motiv Vizită</div>
+        <div class="item" id="patient-symptoms"></div>
+      </div>
+      <div class="item-container">
+        <div class="item-title">Tratament Curent</div>
+        <div class="item" id="patient-current-treatment"></div>
+      </div>
+      <div class="item-container">
+        <div class="item-title">Boli Cronice</div>
+        <div class="item" id="patient-chronic-conditions"></div>
+      </div>
+      <div class="item-container">
+        <div class="item-title">Alergii</div>
+        <div class="item" id="patient-allergies"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row-3-4">
+    <div class="section">
+      <div class="section-title">Diagnostic Medical</div>
+      <div>
+        <div class="input-field">
+          <label>Diagnostic</label>
+          <textarea class="tall-input" id="diagnosis" placeholder="Introduceți diagnosticul"></textarea>
+        </div>
+      </div>
+      <div class="input-row" style="margin-top: 20px;">
+        <div class="input-field">
+          <label>Coduri de boală</label>
+          <input type="text" id="codes1" oninput="validateDiseaseCode(this)"
+                        placeholder="Introduceți codurile de boală">
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Rețetă Medicală</div>
+      <div>
+        <div class="input-field">
+          <label>Rețetă Integrală</label>
+          <textarea class="tall-input" id="rpIntegrala" placeholder="Introduceți datele"></textarea>
+        </div>
+      </div>
+      <div class="input-row" style="margin-top: 20px;">
+        <div class="input-field">
+          <label>Rețetă Gratuită</label>
+          <input type="text" id="rpGratuita" oninput="validaterpGratuita(this)" maxlength="12"
+                        placeholder="EX: ABCDEF 12345">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row-5-6">
+    <div class="section section-5">
+      <div class="section-title">Bilet Trimitere</div>
+      <div class="align-container">
+        <div class="section-5-grid">
+          <div class="input-field">
+            <label>BT CAS 1 Serie / Număr</label>
+            <input type="text" id="btCas1" oninput="validateBtCas(this)" maxlength="13"
+                            placeholder="EX: ABCDE 1234567">
+          </div>
+          <div class="input-field">
+            <label>Specialitate</label>
+            <select id="specialitate1">
+                            <option value="">Selectează specialitatea</option>
+                        </select>
+          </div>
+          <div class="input-field">
+            <label>Tip</label>
+            <select id="tip1">
+                            <option value="">Selectează tipul</option>
+                            <option value="Acut">Acut</option>
+                            <option value="Cronic">Cronic</option>
+                        </select>
+          </div>
+        </div>
+        <div class="section-5-grid">
+          <div class="input-field">
+            <label>BT CAS 2 Serie / Număr</label>
+            <input type="text" id="btCas2" oninput="validateBtCas(this)" maxlength="13"
+                            placeholder="EX: ABCDE 1234567">
+          </div>
+          <div class="input-field">
+            <label>Specialitate</label>
+            <select id="specialitate2">
+                            <option value="">Selectează specialitatea</option>
+                        </select>
+          </div>
+          <div class="input-field">
+            <label>Tip</label>
+            <select id="tip2">
+                            <option value="">Selectează tipul</option>
+                            <option value="Acut">Acut</option>
+                            <option value="Cronic">Cronic</option>
+                        </select>
+          </div>
+        </div>
+        <div class="section-5-grid">
+          <div class="input-field">
+            <label>BT CAS 3 Serie / Număr</label>
+            <input type="text" id="btCas3" oninput="validateBtCas(this)" maxlength="13"
+                            placeholder="EX: ABCDE 1234567">
+          </div>
+          <div class="input-field">
+            <label>Specialitate</label>
+            <select id="specialitate3">
+                            <option value="">Selectează specialitatea</option>
+                        </select>
+          </div>
+          <div class="input-field">
+            <label>Tip</label>
+            <select id="tip3">
+                            <option value="">Selectează tipul</option>
+                            <option value="Acut">Acut</option>
+                            <option value="Cronic">Cronic</option>
+                        </select>
+          </div>
+        </div>
+        <div>
+          <div class="input-field">
+            <label>Bilet simplu</label>
+            <textarea class="tall-input" id="btSimplu" placeholder="Introduceți datele"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section section-6">
+      <div class="section-title">Adeverință Medicală</div>
+      <div class="align-container">
+        <div class="checkbox-container">
+          <div class="checkbox-item">
+            <input type="checkbox" id="amBursa">
+            <label for="amBursa">Bursă Medicală</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="aeAviz">
+            <label for="aeAviz">Aviz Epidemiologic</label>
+          </div>
+        </div>
+        <div class="section-6-grid">
+          <div class="input-field">
+            <label>Scutire absență de la</label>
+            <div class="date-input-wrapper">
+              <input type="date" id="amAbsentaStart" onchange="validateAbsentaDates()"
+                                onfocus="this.showPicker()">
+            </div>
+          </div>
+          <div class="input-field">
+            <label>până la</label>
+            <div class="date-input-wrapper">
+              <input type="date" id="amAbsentaEnd" onchange="validateAbsentaDates()"
+                                onfocus="this.showPicker()">
+            </div>
+          </div>
+        </div>
+        <div class="section-6-grid">
+          <div class="input-field">
+            <label>Scutire sport de la</label>
+            <div class="date-input-wrapper">
+              <input type="date" id="amSportStart" onchange="validateSportDates()"
+                                onfocus="this.showPicker()">
+            </div>
+          </div>
+          <div class="input-field">
+            <label>până la</label>
+            <div class="date-input-wrapper">
+              <input type="date" id="amSportEnd" onchange="validateSportDates()"
+                                onfocus="this.showPicker()">
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="input-field">
+            <label>Alt scop</label>
+            <textarea class="tall-input" id="amAlt" placeholder="Introduceți datele"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Examen Bilanț</div>
+    <div class="section-7-grid">
+      <div class="input-field">
+        <label>Înălțime (cm)</label>
+        <input type="text" id="ebInaltime" onchange="validateInaltime(this)"
+                    placeholder="Introduceți înălțimea">
+      </div>
+      <div class="input-field">
+        <label>Greutate (kg)</label>
+        <input type="text" id="ebGreutate" onchange="validateGreutate(this)"
+                    placeholder="Introduceți greutatea">
+      </div>
+      <div class="input-field">
+        <label>IMC (bmi)</label>
+        <input type="text" id="ebIMC" readonly placeholder="Calculat automat">
+      </div>
+      <div class="input-field">
+        <label>Coduri de boală</label>
+        <input type="text" id="codes2" oninput="validateDiseaseCode(this)"
+                    placeholder="Introduceți codurile de boală">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const appState = {
+            patients: [],
+            currentPage: 0,
+            isLoading: false
+        };
+
+        const domElements = {
+            prevBtn: document.getElementById('prevBtn'),
+            nextBtn: document.getElementById('nextBtn'),
+            pageIndicator: document.getElementById('currentPage'),
+            totalPages: document.getElementById('totalPages'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            saveBtn: document.getElementById('saveBtn'),
+            searchBtn: document.getElementById('searchBtn'),
+            exportBtn: document.getElementById('exportBtn'),
+            reportBtn: document.getElementById('reportBtn'),
+            deleteBtn: document.getElementById('deleteBtn'),
+            ebInaltime: document.getElementById('ebInaltime'),
+            ebGreutate: document.getElementById('ebGreutate'),
+            ebIMC: document.getElementById('ebIMC')
+        };
+
+        const specialties = [
+            'Alergologie', 'Boli infecțioase', 'Cardiologie', 'Chirurgie BMF', 'Chirurgie cardio',
+            'Chirurgie generală', 'Chirurgie plastică', 'Chirurgie toracică', 'Chirurgie vasculară',
+            'Dermato-venerologie', 'Diabet și boli metabolice', 'Endocrinologie', 'Gastroenterologie',
+            'Genetică medicală', 'Hematologie', 'Medicină internă', 'Nefrologie', 'Neurochirurgie',
+            'Neurologie', 'Obstetrică-ginecologie', 'Oftalmologie', 'Oncologie', 'Ortopedie', 'ORL',
+            'Pediatrie', 'Pneumologie', 'Psihiatrie', 'Radiologie', 'Radioterapie',
+            'Reabilitare medicală fizică', 'Reumatologie', 'Urologie'
+        ];
+
+        function initializeApp() {
+            loadTodaysPatients();
+            setupEventHandlers();
+            initSpecialtyDropdowns();
+        }
+
+        function initSpecialtyDropdowns() {
+            const dropdowns = [
+                document.getElementById('specialitate1'),
+                document.getElementById('specialitate2'),
+                document.getElementById('specialitate3')
+            ];
+
+            dropdowns.forEach(dropdown => {
+                specialties.forEach(specialty => {
+                    const option = document.createElement('option');
+                    option.value = specialty;
+                    option.textContent = specialty;
+                    dropdown.appendChild(option);
+                });
+            });
+        }
+
+        function setupEventHandlers() {
+            domElements.refreshBtn.addEventListener('click', loadTodaysPatients);
+            domElements.saveBtn.addEventListener('click', savePatientData);
+            domElements.prevBtn.addEventListener('click', goToPrevPage);
+            domElements.nextBtn.addEventListener('click', goToNextPage);
+            domElements.searchBtn.addEventListener('click', () => openModal('searchModal'));
+
+            domElements.exportBtn.addEventListener('click', () => {
+                setDefaultExportDates();
+                openModal('exportModal');
+            });
+
+            domElements.reportBtn.addEventListener('click', () => {
+                setDefaultReportDates();
+                openModal('reportModal');
+            });
+
+            domElements.deleteBtn.addEventListener('click', () => openModal('deleteModal'));
+
+            domElements.ebInaltime.addEventListener('input', updateBmi);
+            domElements.ebGreutate.addEventListener('input', updateBmi);
+        }
+
+        function loadTodaysPatients() {
+            appState.isLoading = true;
+            showNotification("Se încarcă pacienții de astăzi...", 'info');
+
+            google.script.run
+                .withSuccessHandler((patients) => {
+                    appState.isLoading = false;
+
+                    if (!Array.isArray(patients)) {
+                        showNotification("Format invalid al datelor", 'error');
+                        return;
+                    }
+
+                    appState.patients = patients;
+                    appState.currentPage = patients.length > 0 ? 1 : 0;
+                    updatePaginationControls();
+
+                    if (patients.length === 0) {
+                        showNotification("Nu există pacienți înregistrați astăzi", 'info');
+                    } else {
+                        displayCurrentPatient();
+                        if (patients.length === 1) {
+                            showNotification('S-a încărcat cu succes 1 pacient', 'success');
+                        } else {
+                            showNotification(`S-au încărcat cu succes ${patients.length} pacienți`, 'success');
+                        }
+                    }
+                })
+                .withFailureHandler((error) => {
+                    appState.isLoading = false;
+                    showNotification(error.message, 'error');
+                })
+                .loadTodaysPatients();
+        }
+
+        function savePatientData() {
+            const patient = appState.patients[appState.currentPage - 1];
+            if (appState.currentPage < 1 || appState.currentPage > appState.patients.length || !patient || !patient.id) {
+                showNotification("Nu există pacient selectat pentru salvare", 'error');
+                return;
+            }
+
+            const validationErrors = [];
+
+            for (let i = 1; i <= 3; i++) {
+                const btCasInput = document.getElementById(`btCas${i}`);
+                const specialitate = document.getElementById(`specialitate${i}`).value;
+                const tip = document.getElementById(`tip${i}`).value;
+
+                validateBtCas(btCasInput);
+                const btCas = btCasInput.value;
+
+                if (btCas && btCas.length !== 13) {
+                    validationErrors.push(`BT CAS ${i} trebuie să conțină exact 13 caractere (format: ABCDE 1234567)`);
+                }
+
+                if ((btCas || specialitate || tip) && !(btCas && specialitate && tip)) {
+                    validationErrors.push(`Completați toate câmpurile pentru BT CAS ${i} (Serie/Număr, Specialitate, Tip)`);
+                }
+            }
+
+            const rpGratuitaInput = document.getElementById('rpGratuita');
+            validaterpGratuita(rpGratuitaInput);
+            const rpGratuita = rpGratuitaInput.value;
+            if (rpGratuita && rpGratuita.length !== 12) {
+                validationErrors.push('Rețeta gratuită trebuie să conțină exact 12 caractere (format: ABCDEF 12345)');
+            }
+
+            const amAbsentaStart = document.getElementById('amAbsentaStart').value;
+            const amAbsentaEnd = document.getElementById('amAbsentaEnd').value;
+            const amSportStart = document.getElementById('amSportStart').value;
+            const amSportEnd = document.getElementById('amSportEnd').value;
+
+            if ((amAbsentaStart || amAbsentaEnd) && !(amAbsentaStart && amAbsentaEnd)) {
+                validationErrors.push('Completați ambele date în scutire absență (început și sfârșit)');
+            }
+
+            if ((amSportStart || amSportEnd) && !(amSportStart && amSportEnd)) {
+                validationErrors.push('Completați ambele date în scutire sport (început și sfârșit)');
+            }
+
+            const ebInaltime = document.getElementById('ebInaltime').value;
+            const ebGreutate = document.getElementById('ebGreutate').value;
+            const ebIMC = document.getElementById('ebIMC').value;
+            const codes2 = document.getElementById('codes2').value;
+
+            if (ebInaltime || ebGreutate || ebIMC || codes2) {
+                if (!ebInaltime) validationErrors.push('Introduceți înălțimea');
+                if (!ebGreutate) validationErrors.push('Introduceți greutatea');
+                if (!ebIMC) validationErrors.push('IMC nu s-a calculat automat');
+                if (!codes2) validationErrors.push('Introduceți codurile de boală');
+            }
+
+            if (validationErrors.length > 0) {
+                showNotification(validationErrors.join('<br>'), 'warning');
+                return;
+            }
+
+            const patientData = {
+                id: patient.id,
+                diagnosis: document.getElementById('diagnosis').value,
+                codes1: document.getElementById('codes1').value,
+                rpIntegrala: document.getElementById('rpIntegrala').value,
+                rpGratuita: rpGratuita,
+                btCas1: document.getElementById('btCas1').value,
+                specialitate1: document.getElementById('specialitate1').value,
+                tip1: document.getElementById('tip1').value,
+                btCas2: document.getElementById('btCas2').value,
+                specialitate2: document.getElementById('specialitate2').value,
+                tip2: document.getElementById('tip2').value,
+                btCas3: document.getElementById('btCas3').value,
+                specialitate3: document.getElementById('specialitate3').value,
+                tip3: document.getElementById('tip3').value,
+                btSimplu: document.getElementById('btSimplu').value,
+                amAbsentaStart: amAbsentaStart,
+                amAbsentaEnd: amAbsentaEnd,
+                amSportStart: amSportStart,
+                amSportEnd: amSportEnd,
+                amAlt: document.getElementById('amAlt').value,
+                amBursa: document.getElementById('amBursa').checked,
+                aeAviz: document.getElementById('aeAviz').checked,
+                ebInaltime: ebInaltime,
+                ebGreutate: ebGreutate,
+                ebIMC: ebIMC,
+                codes2: document.getElementById('codes2').value,
+            };
+
+            showNotification("Se salvează datele...", 'info');
+
+            google.script.run
+                .withSuccessHandler(() => {
+                    showNotification("Datele pacientului au fost salvate cu succes", 'success');
+                    setTimeout(loadTodaysPatients, 500);
+                })
+                .withFailureHandler((error) => {
+                    showNotification(error.message, 'error');
+                })
+                .savePatientData(patientData);
+        }
+
+        function displayCurrentPatient() {
+            if (appState.currentPage < 1 || appState.currentPage > appState.patients.length) return;
+            const patient = appState.patients[appState.currentPage - 1];
+
+            const setContent = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) element.textContent = value || 'N/A';
+            };
+
+            const setValue = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) element.value = value || '';
+            };
+
+            const setCheckbox = (id, checked) => {
+                const element = document.getElementById(id);
+                if (element) element.checked = !!checked;
+            };
+
+            const setSelect = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) element.value = value || '';
+            };
+
+            setContent('patient-visit-info', `${patient.id} / ${patient.timestamp}`);
+            setContent('patient-basic-info', `${patient.fullName} / ${patient.age} / ${patient.gender}`);
+            setContent('patient-contact-info', `${patient.email} / ${patient.phone ? patient.phone : 'N/A'}`);
+            setContent('patient-education-info', `${patient.faculty} / ${patient.year} / ${patient.language}`);
+            setContent('patient-symptoms', patient.symptoms);
+            setContent('patient-current-treatment', patient.treatment);
+            setContent('patient-chronic-conditions', patient.chronic);
+            setContent('patient-allergies', patient.allergies);
+
+            if (patient.gender === 'F') {
+                document.getElementById('menstruation-display').style.display = 'block';
+                setContent('patient-last-menstruation', patient.lmp);
+            }
+            else {
+                document.getElementById('menstruation-display').style.display = 'none';
+                setContent('patient-last-menstruation', '');
+            }
+
+            setValue('diagnosis', patient.diagnosis);
+            setValue('codes1', patient.codes1);
+            setValue('rpIntegrala', patient.rpIntegrala);
+            setValue('rpGratuita', patient.rpGratuita);
+            setValue('btCas1', patient.btCas1);
+            setSelect('specialitate1', patient.specialitate1);
+            setSelect('tip1', patient.tip1);
+            setValue('btCas2', patient.btCas2);
+            setSelect('specialitate2', patient.specialitate2);
+            setSelect('tip2', patient.tip2);
+            setValue('btCas3', patient.btCas3);
+            setSelect('specialitate3', patient.specialitate3);
+            setSelect('tip3', patient.tip3);
+            setValue('btSimplu', patient.btSimplu);
+            setCheckbox('amBursa', patient.amBursa);
+            setCheckbox('aeAviz', patient.aeAviz);
+            setValue('amAbsentaStart', patient.amAbsentaStart);
+            setValue('amAbsentaEnd', patient.amAbsentaEnd);
+            setValue('amSportStart', patient.amSportStart);
+            setValue('amSportEnd', patient.amSportEnd);
+            setValue('amAlt', patient.amAlt);
+            setValue('ebInaltime', patient.ebInaltime);
+            setValue('ebGreutate', patient.ebGreutate);
+            setValue('ebIMC', patient.ebIMC);
+            setValue('codes2', patient.codes2);
+        }
+
+        function updatePaginationControls() {
+            const totalPatients = appState.patients.length;
+            domElements.pageIndicator.textContent = appState.currentPage;
+            domElements.totalPages.textContent = totalPatients;
+            domElements.prevBtn.disabled = appState.currentPage <= 1 || appState.isLoading;
+            domElements.nextBtn.disabled = appState.currentPage >= totalPatients || appState.isLoading;
+        }
+
+        function goToPrevPage() {
+            if (appState.currentPage > 1 && !appState.isLoading) {
+                appState.currentPage--;
+                displayCurrentPatient();
+                updatePaginationControls();
+            }
+        }
+
+        function goToNextPage() {
+            if (appState.currentPage < appState.patients.length && !appState.isLoading) {
+                appState.currentPage++;
+                displayCurrentPatient();
+                updatePaginationControls();
+            }
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function setDefaultExportDates() {
+            const now = new Date();
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(now.getDate() - 7);
+            const tzOffset = now.getTimezoneOffset() * 60000;
+
+            document.getElementById('exportStartDate').value = formatDateTimeLocal(
+                new Date(oneWeekAgo.getTime() - tzOffset),
+                '00:00:00'
+            );
+            document.getElementById('exportEndDate').value = formatDateTimeLocal(
+                new Date(now.getTime() - tzOffset),
+                '23:59:59'
+            );
+        }
+
+        function setDefaultReportDates() {
+            const now = new Date();
+            const tzOffset = now.getTimezoneOffset() * 60000;
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+            document.getElementById('reportStartDate').value = formatDateTimeLocal(
+                new Date(firstDay.getTime() - tzOffset),
+                '00:00:00'
+            );
+            document.getElementById('reportEndDate').value = formatDateTimeLocal(
+                new Date(lastDay.getTime() - tzOffset),
+                '23:59:59'
+            );
+        }
+
+        function formatDateTimeLocal(date, time) {
+            const d = new Date(date);
+            if (time) {
+                const [hours, minutes, seconds] = time.split(':');
+                d.setHours(hours, minutes, seconds || 0);
+            }
+
+            const pad = n => n.toString().padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
+
+        function performSearch() {
+            const name = document.getElementById('searchName').value;
+            const email = document.getElementById('searchEmail').value;
+            const phone = document.getElementById('searchPhone').value;
+
+            if (name || phone || email) {
+                showNotification("Se caută pacientul...", 'info');
+                closeModal('searchModal');
+
+                google.script.run.withSuccessHandler(patients => {
+                    if (patients.length > 0) {
+                        appState.patients = patients;
+                        appState.currentPage = 1;
+                        updatePaginationControls();
+                        displayCurrentPatient();
+                        if (patients.length === 1) {
+                            showNotification('S-a găsit 1 rezultat', 'success');
+                        } else {
+                            showNotification(`S-au găsit ${patients.length} rezultate`, 'success');
+                        }
+                    } else {
+                        showNotification("Nu s-au găsit rezultate", 'warning');
+                    }
+                })
+                    .withFailureHandler(error => {
+                        showNotification(error.message, 'error');
+                    })
+                    .searchPatients(name, email, phone);
+            }
+            else showNotification(`Introduceți cel puțin un câmp de căutare`, 'warning');
+        }
+
+        function performExport() {
+            const startDateStr = document.getElementById('exportStartDate').value;
+            const endDateStr = document.getElementById('exportEndDate').value;
+
+            if (!startDateStr || !endDateStr) {
+                showNotification('Vă rugăm să completați ambele date', 'warning');
+                return;
+            }
+
+            const startDate = new Date(startDateStr);
+            const endDate = new Date(endDateStr);
+
+            if (startDate > endDate) {
+                showNotification('Data / Ora de sfârșit nu poate fi înainte de data / ora de început', 'warning');
+            } else {
+                showNotification("Se exportă pacienții...", 'info');
+                closeModal('exportModal');
+
+                google.script.run
+                    .withSuccessHandler(() => { showNotification("Exportul a fost realizat cu succes", 'success'); })
+                    .withFailureHandler((error) => { showNotification(error.message, 'error'); })
+                    .exportPatientData(startDateStr, endDateStr);
+            }
+        }
+
+        function performReport() {
+            const startDateStr = document.getElementById('reportStartDate').value;
+            const endDateStr = document.getElementById('reportEndDate').value;
+
+            if (!startDateStr || !endDateStr) {
+                showNotification('Vă rugăm să completați ambele date', 'warning');
+                return;
+            }
+
+            const startDate = new Date(startDateStr);
+            const endDate = new Date(endDateStr);
+
+            if (startDate > endDate) {
+                showNotification('Data / Ora de sfârșit nu poate fi înainte de data / ora de început', 'warning');
+            } else {
+                showNotification("Se raportează pacienții...", 'info');
+                closeModal('reportModal');
+
+                google.script.run
+                    .withSuccessHandler(() => { showNotification("Raportul a fost realizat cu succes", 'success'); })
+                    .withFailureHandler((error) => { showNotification(error.message, 'error'); })
+                    .reportPatientData(startDateStr, endDateStr);
+            }
+        }
+
+        function performDelete() {
+            const password = document.getElementById('deletePassword').value;
+
+            google.script.run
+                .withSuccessHandler(() => {
+                    showNotification("Ştergerea a fost realizată cu succes", 'success');
+                    closeModal('deleteModal');
+                    google.script.run
+                        .withSuccessHandler()
+                        .withFailureHandler()
+                        .resetIDStorage();
+                    loadTodaysPatients();
+                })
+                .withFailureHandler((error) => {
+                    showNotification(error.message, 'error');
+                })
+                .deletePatientData(password);
+        }
+
+        function validateDiseaseCode(input) {
+            let value = input.value;
+            let cleanedValue = value.replace(/[^\d\s]/g, '');
+            const digitCount = cleanedValue.replace(/\s/g, '').length;
+            if (digitCount > 18) cleanedValue = cleanedValue.slice(0, -(digitCount - 18));
+            input.value = cleanedValue;
+        }
+
+        function validateBtCas(input) {
+            let value = input.value.toUpperCase();
+            let cleanedValue = value.replace(/[^A-Z0-9]/g, '');
+            let letters = cleanedValue.slice(0, 5).replace(/[^A-Z]/g, '');
+            let digits = cleanedValue.slice(5).replace(/\D/g, '').slice(0, 7);
+            input.value = letters.slice(0, 5) + (digits.length > 0 ? ' ' + digits.slice(0, 7) : '');
+        }
+
+        function validaterpGratuita(input) {
+            let value = input.value.toUpperCase();
+            let cleanedValue = value.replace(/[^A-Z0-9]/g, '');
+            let letters = cleanedValue.slice(0, 6).replace(/[^A-Z]/g, '');
+            let digits = cleanedValue.slice(6).replace(/\D/g, '').slice(0, 5);
+            input.value = letters.slice(0, 6) + (digits.length > 0 ? ' ' + digits.slice(0, 5) : '');
+        }
+
+        function validateInaltime(input) {
+            const caretPos = input.selectionStart;
+            let value = input.value.replace(/[^\d]/g, '');
+
+            if (value === '') {
+                input.value = '';
+                updateBmi();
+                return;
+            }
+
+            const numericValue = parseInt(value, 10);
+
+            if (isNaN(numericValue)) {
+                input.value = '';
+            } else if (numericValue < 50) {
+                input.value = '50';
+            } else if (numericValue > 250) {
+                input.value = '250';
+            } else {
+                input.value = value;
+            }
+
+            const newCaretPos = Math.min(caretPos, input.value.length);
+            input.setSelectionRange(newCaretPos, newCaretPos);
+            updateBmi();
+        }
+
+        function validateGreutate(input) {
+            const caretPos = input.selectionStart;
+            let value = input.value.replace(/[^\d.,]/g, '')
+                .replace(/([.,])(?=.*[.,])/g, '');
+
+            if (value === '') {
+                input.value = '';
+                updateBmi();
+                return;
+            }
+            const standardizedValue = value.replace(',', '.');
+            const numericValue = parseFloat(standardizedValue);
+
+            if (isNaN(numericValue)) {
+                input.value = '';
+            } else if (numericValue < 25) {
+                input.value = '25';
+            } else if (numericValue > 250) {
+                input.value = '250';
+            } else {
+                const parts = standardizedValue.split('.');
+                if (parts.length > 1) {
+                    input.value = parts[0] + '.' + parts[1].charAt(0);
+                } else {
+                    input.value = standardizedValue;
+                }
+            }
+
+            const newCaretPos = Math.min(caretPos, input.value.length);
+            input.setSelectionRange(newCaretPos, newCaretPos);
+            updateBmi();
+        }
+
+        function updateBmi() {
+            const ebInaltime = document.getElementById('ebInaltime').value;
+            const ebGreutate = document.getElementById('ebGreutate').value;
+
+            if (ebInaltime === '' || ebGreutate === '') {
+                document.getElementById('ebIMC').value = '';
+                return;
+            }
+
+            const heightInMeters = parseFloat(ebInaltime) / 100;
+            const bmi = (parseFloat(ebGreutate) / (heightInMeters * heightInMeters)).toFixed(1);
+            document.getElementById('ebIMC').value = bmi;
+        }
+
+        function validateAbsentaDates() {
+            const startDate = document.getElementById('amAbsentaStart');
+            const endDate = document.getElementById('amAbsentaEnd');
+
+            if (startDate.value && endDate.value && new Date(endDate.value) < new Date(startDate.value)) {
+                showNotification('Data de sfârșit pentru scutire absență nu poate fi înainte de data de început', 'warning');
+                endDate.value = '';
+            }
+        }
+
+        function validateSportDates() {
+            const startDate = document.getElementById('amSportStart');
+            const endDate = document.getElementById('amSportEnd');
+
+            if (startDate.value && endDate.value && new Date(endDate.value) < new Date(startDate.value)) {
+                showNotification('Data de sfârșit pentru scutire sport nu poate fi înainte de data de început', 'warning');
+                endDate.value = '';
+            }
+        }
+
+        let currentNotification = null;
+        let pendingNotification = null;
+
+        function showNotification(message, type = 'info') {
+            if (currentNotification) {
+                pendingNotification = { message, type };
+                return;
+            }
+
+            const icons = {
+                success: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>',
+                error: '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>',
+                warning: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>',
+                info: '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>'
+            };
+
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      ${icons[type] || icons.info}
+    </svg>
+    ${message}
+  `;
+
+            document.body.appendChild(notification);
+            currentNotification = notification;
+
+            setTimeout(() => notification.classList.add('show'), 10);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                    currentNotification = null;
+
+                    if (pendingNotification) {
+                        const next = pendingNotification;
+                        pendingNotification = null;
+                        showNotification(next.message, next.type);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeApp);
+  </script>
+</body>
+
+</html>
